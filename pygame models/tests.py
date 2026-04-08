@@ -8,9 +8,9 @@ pygame.init()
 # ------------------- Sound Effects & Music Playlist ------------------- #
 # Placeholder paths for sound effects
 sound_effect_paths = {
-    "menu_click": "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/MenuClicks.mp3",
-    "jump": "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/GameJump.mp3",
-    "lose": "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/GameLoss.mp3",
+    "menu_click": "C:/Users/mcmon/Documents/PixelRunner/pygame models/MenuClicks.mp3",
+    "jump": "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameJump.mp3",
+    "lose": "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameLoss.mp3",
 }
 
 # Load sound effects
@@ -20,22 +20,22 @@ for key, path in sound_effect_paths.items():
 
 # Set initial volumes
 sound_volumes = {
-    "menu_click": 1.3,
-    "jump": 999999999999999999999999.,
-    "lose": 999999999999999999999999.
+    "menu_click": 1.0,
+    "jump": 0.04,
+    "lose": 0.2
 }
 for key, sound in sound_effects.items():
     sound.set_volume(sound_volumes[key])
 
 # ------------------- Music Management ------------------- #
 menu_music_paths = [
-    "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/MenuMusic.mp3",
-    "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/MenuMusic.mp3"
+    "C:/Users/mcmon/Documents/PixelRunner/pygame models/MenuMusic.mp3",
+    "C:/Users/mcmon/Documents/PixelRunner/pygame models/MenuMusic.mp3"
 ]
 game_music_paths = [
-    "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/GameMusic-1.mp3",
-    "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/GameMusic-2.mp3",
-    "C:/Users/bmcmonigle8180/Documents/PixelRunner/PixelRunner/pygame models/GameMusic-3.mp3"
+    "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameMusic-1.mp3",
+    "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameMusic-2.mp3",
+    "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameMusic-3.mp3"
 ]
 
 menu_music_playlist = []
@@ -48,7 +48,7 @@ def play_menu_music():
         random.shuffle(menu_music_playlist)
     track = menu_music_playlist.pop()
     pygame.mixer.music.load(track)
-    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.set_volume(0.03)
     pygame.mixer.music.play(-1)
 
 def play_game_music():
@@ -58,7 +58,7 @@ def play_game_music():
         random.shuffle(game_music_playlist)
     track = game_music_playlist.pop()
     pygame.mixer.music.load(track)
-    pygame.mixer.music.set_volume(0.05)
+    pygame.mixer.music.set_volume(0.08)
     pygame.mixer.music.play()
 
 def check_music():
@@ -80,17 +80,17 @@ pygame.display.set_caption("Pixel Runner")
 clock = pygame.time.Clock()
 
 # ---------------- Assets ---------------- #
-backgroundImg = pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/pixilart-drawing.png")
+backgroundImg = pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/pixilart-drawing.png")
 female_imgs = [
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/femmovewalkanim1-pixilart (3).png").convert_alpha(),
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/femmovewalkanim2-pixilart (5).png").convert_alpha()
+    pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/femmovewalkanim1-pixilart (3).png").convert_alpha(),
+    pygame.image.load("C:/Users//mcmon/Documents/PixelRunner/pygame models/femmovewalkanim2-pixilart (5).png").convert_alpha()
 ]
 male_imgs = [
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/malewalkanim1.png").convert_alpha(),
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/malewalkanim2.png").convert_alpha()
+    pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/malewalkanim1.png").convert_alpha(),
+    pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/malewalkanim2.png").convert_alpha()
 ]
-obstacle_img = pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/seat-model-pixilart.png").convert_alpha()
-overhead_img = pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/brick-over-head-pixilart.png").convert_alpha()
+obstacle_img = pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/seat-model-pixilart.png").convert_alpha()
+overhead_img = pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/brick-over-head-pixilart.png").convert_alpha()
 
 # ---------------- Constants ---------------- #
 gravity = 0.6
