@@ -6,4 +6,6 @@ Python version 1.13.5
 
 	next run these two and install them
 	pip install pygame 
-	pip install screeninfo
+	pip install screeninfo 
+
+lastly to open game go into pygame models :)
