@@ -1,4 +1,5 @@
 Python version 3.13.5 
+make sure all advanced options are installed
 
 	in cmd prompt do these two things 
 
