@@ -8,4 +8,4 @@ Python version 1.13.5
 	pip install pygame 
 	pip install screeninfo 
 
-lastly to open game go into pygame models :)
+lastly to open game go into pygame models and run it with python IDLE :)
