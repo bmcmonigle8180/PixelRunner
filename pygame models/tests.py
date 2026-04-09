@@ -2,15 +2,21 @@ import pygame
 import sys
 import random
 import os
+ASSETS_DIR = "assets"
+
+def asset(path):
+    return os.path.join(ASSETS_DIR, path)
 
 pygame.init()
 
 # ------------------- Sound Effects & Music Playlist ------------------- #
 # Placeholder paths for sound effects
+
 sound_effect_paths = {
-    "menu_click": "C:/Users/mcmon/Documents/PixelRunner/pygame models/MenuClicks.mp3",
-    "jump": "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameJump.mp3",
-    "lose": "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameLoss.mp3",
+    "menu_click": asset("MenuClicks.mp3"),
+    "jump": asset("GameJump.mp3"),
+    "lose": asset("GameLoss.mp3"),
+
 }
 
 # Load sound effects
@@ -20,22 +26,24 @@ for key, path in sound_effect_paths.items():
 
 # Set initial volumes
 sound_volumes = {
+    
     "menu_click": 1.0,
     "jump": 0.04,
     "lose": 0.2
+
 }
 for key, sound in sound_effects.items():
     sound.set_volume(sound_volumes[key])
 
 # ------------------- Music Management ------------------- #
 menu_music_paths = [
-    "C:/Users/mcmon/Documents/PixelRunner/pygame models/MenuMusic.mp3",
-    "C:/Users/mcmon/Documents/PixelRunner/pygame models/MenuMusic.mp3"
+    asset("MenuMusic.mp3"),
+    asset("MenuMusic.mp3")
 ]
 game_music_paths = [
-    "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameMusic-1.mp3",
-    "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameMusic-2.mp3",
-    "C:/Users/mcmon/Documents/PixelRunner/pygame models/GameMusic-3.mp3"
+    asset("GameMusic-1.mp3"),
+    asset("GameMusic-2.mp3"),
+    asset("GameMusic-3.mp3")
 ]
 
 menu_music_playlist = []
@@ -80,17 +88,17 @@ pygame.display.set_caption("Pixel Runner")
 clock = pygame.time.Clock()
 
 # ---------------- Assets ---------------- #
-backgroundImg = pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/pixilart-drawing.png")
+backgroundImg = pygame.image.load(asset("pixilart-drawing.png"))
 female_imgs = [
-    pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/femmovewalkanim1-pixilart (3).png").convert_alpha(),
-    pygame.image.load("C:/Users//mcmon/Documents/PixelRunner/pygame models/femmovewalkanim2-pixilart (5).png").convert_alpha()
-]
+    pygame.image.load(asset("femmovewalkanim1-pixilart (3).png")).convert_alpha(),
+pygame.image.load(asset("femmovewalkanim2-pixilart (5).png")).convert_alpha()
+    ]
 male_imgs = [
-    pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/malewalkanim1.png").convert_alpha(),
-    pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/malewalkanim2.png").convert_alpha()
+    pygame.image.load(asset("malewalkanim1.png")).convert_alpha(),
+pygame.image.load(asset("malewalkanim2.png")).convert_alpha()
 ]
-obstacle_img = pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/seat-model-pixilart.png").convert_alpha()
-overhead_img = pygame.image.load("C:/Users/mcmon/Documents/PixelRunner/pygame models/brick-over-head-pixilart.png").convert_alpha()
+obstacle_img = pygame.image.load(asset("seat-model-pixilart.png")).convert_alpha()
+overhead_img = pygame.image.load(asset("brick-over-head-pixilart.png")).convert_alpha()
 
 # ---------------- Constants ---------------- #
 gravity = 0.6

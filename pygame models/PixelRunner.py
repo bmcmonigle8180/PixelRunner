@@ -2,8 +2,85 @@ import pygame
 import sys
 import random
 import os
+ASSETS_DIR = "assets"
+
+def asset(path):
+    return os.path.join(ASSETS_DIR, path)
 
 pygame.init()
+
+# ------------------- Sound Effects & Music Playlist ------------------- #
+# Placeholder paths for sound effects
+
+sound_effect_paths = {
+    "menu_click": asset("MenuClicks.mp3"),
+    "jump": asset("GameJump.mp3"),
+    "lose": asset("GameLoss.mp3"),
+
+}
+
+# Load sound effects
+sound_effects = {}
+for key, path in sound_effect_paths.items():
+    sound_effects[key] = pygame.mixer.Sound(path)
+
+# Set initial volumes
+sound_volumes = {
+    
+    "menu_click": 1.0,
+    "jump": 0.04,
+    "lose": 0.2
+
+}
+for key, sound in sound_effects.items():
+    sound.set_volume(sound_volumes[key])
+
+# ------------------- Music Management ------------------- #
+menu_music_paths = [
+    asset("MenuMusic.mp3"),
+    asset("MenuMusic.mp3")
+]
+game_music_paths = [
+    asset("GameMusic-1.mp3"),
+    asset("GameMusic-2.mp3"),
+    asset("GameMusic-3.mp3")
+]
+
+menu_music_playlist = []
+game_music_playlist = []
+
+def play_menu_music():
+    global menu_music_playlist
+    if not menu_music_playlist:
+        menu_music_playlist = menu_music_paths.copy()
+        random.shuffle(menu_music_playlist)
+    track = menu_music_playlist.pop()
+    pygame.mixer.music.load(track)
+    pygame.mixer.music.set_volume(0.03)
+    pygame.mixer.music.play(-1)
+
+def play_game_music():
+    global game_music_playlist
+    if not game_music_playlist:
+        game_music_playlist = game_music_paths.copy()
+        random.shuffle(game_music_playlist)
+    track = game_music_playlist.pop()
+    pygame.mixer.music.load(track)
+    pygame.mixer.music.set_volume(0.08)
+    pygame.mixer.music.play()
+
+def check_music():
+    if not pygame.mixer.music.get_busy():
+        # For simplicity, keep playing game music
+        play_game_music()
+
+# Helper function for menu click sound
+def play_menu_click():
+    sound_effects["menu_click"].play()
+
+# ------------------ Rest of your code ------------------ #
+# Replace previous sound effect initializations with the new structure
+# and call play_menu_music() at start of menu, play_game_music() at game start
 
 # ---------------- Initial temporary screen ---------------- #
 screen = pygame.display.set_mode((1280, 720))
@@ -11,20 +88,17 @@ pygame.display.set_caption("Pixel Runner")
 clock = pygame.time.Clock()
 
 # ---------------- Assets ---------------- #
-backgroundImg = pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/pixilart-drawing.png")
-
+backgroundImg = pygame.image.load(asset("pixilart-drawing.png"))
 female_imgs = [
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/femmovewalkanim1-pixilart (3).png").convert_alpha(),
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/femmovewalkanim2-pixilart (5).png").convert_alpha()
-]
-
+    pygame.image.load(asset("femmovewalkanim1-pixilart (3).png")).convert_alpha(),
+pygame.image.load(asset("femmovewalkanim2-pixilart (5).png")).convert_alpha()
+    ]
 male_imgs = [
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/malewalkanim1.png").convert_alpha(),
-    pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/malewalkanim2.png").convert_alpha()
+    pygame.image.load(asset("malewalkanim1.png")).convert_alpha(),
+pygame.image.load(asset("malewalkanim2.png")).convert_alpha()
 ]
-
-obstacle_img = pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/seat-model-pixilart.png").convert_alpha()
-overhead_img = pygame.image.load("C:/Users/bmcmonigle8180/Documents/SE/SE.git/pygame models/brick-over-head-pixilart.png").convert_alpha()
+obstacle_img = pygame.image.load(asset("seat-model-pixilart.png")).convert_alpha()
+overhead_img = pygame.image.load(asset("brick-over-head-pixilart.png")).convert_alpha()
 
 # ---------------- Constants ---------------- #
 gravity = 0.6
@@ -33,7 +107,7 @@ ground_level_ratio = 0.82
 LEADERBOARD_FILE = "leaderboard.txt"
 
 BASE_SPEED = 6
-MAX_SPEED = 15
+MAX_SPEED = 200
 BASE_ACCEL = 0.0025
 
 MAX_SPACING = 1000
@@ -75,6 +149,7 @@ def resolution_menu():
                 elif event.key == pygame.K_DOWN:
                     selected = (selected + 1) % len(options)
                 elif event.key == pygame.K_RETURN:
+                    play_menu_click()
                     chosen = options[selected]
                     if chosen == "Fullscreen":
                         return (max_width, max_height), pygame.FULLSCREEN
@@ -153,16 +228,17 @@ def get_leaderboard():
                 continue
     return sorted(scores.items(), key=lambda x: x[1], reverse=True)[:5]
 
-#----------- Spawn Checker ---------------#
-def can_spawn(new_x, obstacles, overheads):
-    for r in obstacles:
-        if abs(r.x - new_x) < MIN_SPACING:
-            return False
-    for r in overheads:
-        if abs(r.x - new_x) < MIN_SPACING:
+# ----------- Spawn checker ----------- #
+def can_spawn(new_x, obstacles, overheads, min_distance=MIN_SPACING):
+    for r in obstacles + overheads:
+        if abs(r.x - new_x) < min_distance:
             return False
     return True
-#change spacings in contents
+
+# ----------- Dynamic min distance based on speed ----------- #
+def get_dynamic_min_distance(speed):
+    return max(MIN_SPACING, int(MIN_SPACING + (speed - BASE_SPEED) * 2))
+
 # ---------------- Game Function ---------------- #
 def run_game(username, player_imgs):
     player_x = 100
@@ -182,7 +258,30 @@ def run_game(username, player_imgs):
 
     font = pygame.font.Font(None, 40)
 
+    def spawn_obstacles():
+        for _ in range(20):
+            new_x = WIDTH + random.randint(100, 1500)
+            if can_spawn(new_x, obstacles, overheads, current_min_distance):
+                rect = obstacle_img_scaled.get_rect()
+                rect.x = new_x
+                rect.y = ground_level - rect.height
+                obstacles.append(rect)
+                break
+
+    def spawn_overheads():
+        for _ in range(20):
+            new_x = WIDTH + random.randint(200, 1500)
+            if can_spawn(new_x, obstacles, overheads, current_min_distance):
+                rect = overhead_img_scaled.get_rect()
+                rect.x = new_x
+                rect.y = ground_level - player_imgs[0].get_height() - OVERHEAD_HEIGHT_OFFSET
+                overheads.append(rect)
+                break
+
     while True:
+        check_music()
+        current_min_distance = get_dynamic_min_distance(scroll_speed)
+
         # Scroll background
         bg_x1 -= scroll_speed
         bg_x2 -= scroll_speed
@@ -202,6 +301,10 @@ def run_game(username, player_imgs):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and player_y >= ground_level - player_imgs[0].get_height():
                     velocity_y = jump_strength
+                    sound_effects["jump"].play()
+                # Menu click sound for menu navigation
+                elif event.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_1, pygame.K_2, pygame.K_RETURN]:
+                    play_menu_click()
 
         # Player physics
         velocity_y += gravity
@@ -210,6 +313,7 @@ def run_game(username, player_imgs):
             player_y = ground_level - player_imgs[0].get_height()
             velocity_y = 0
 
+        # Increase speed gradually
         speed += BASE_ACCEL
         if speed > MAX_SPEED:
             speed = MAX_SPEED
@@ -222,26 +326,11 @@ def run_game(username, player_imgs):
         if frame // 10 != prev_frame // 10:
             score += 1
 
-        # ---------------- Spawn Obstacles ---------------- #
-        if len(obstacles) == 0 or obstacles[-1].x < WIDTH - 300:
-            for _ in range(10):
-                new_x = WIDTH + random.randint(0, 200)
-                if can_spawn(new_x, obstacles, overheads):
-                    rect = obstacle_img_scaled.get_rect()
-                    rect.x = new_x
-                    rect.y = ground_level - rect.height
-                    obstacles.append(rect)
-                    break
-        #-------- Spawn Overhead ---------------------------#
-        if len(overheads) == 0 or overheads[-1].x < WIDTH - 500:
-            for _ in range(10):
-                new_x = WIDTH + random.randint(200, 400)
-                if can_spawn(new_x, obstacles, overheads):
-                    rect = overhead_img_scaled.get_rect()
-                    rect.x = new_x
-                    rect.y = ground_level - player_imgs[0].get_height() - OVERHEAD_HEIGHT_OFFSET
-                    overheads.append(rect)
-                    break
+        # Spawn obstacles and overheads
+        if len(obstacles) == 0 or obstacles[-1].x < WIDTH - random.randint(50, 700):
+            spawn_obstacles()
+        if len(overheads) == 0 or overheads[-1].x < WIDTH - random.randint(50, 700):
+            spawn_overheads()
 
         # Move obstacles
         for r in obstacles:
@@ -253,7 +342,7 @@ def run_game(username, player_imgs):
         obstacles = [r for r in obstacles if r.x > -100]
         overheads = [r for r in overheads if r.x > -100]
 
-        # Collision
+        # Collision detection
         player_rect = current_img.get_rect(topleft=(player_x, player_y))
         hit_type = None
         for r in obstacles:
@@ -263,10 +352,18 @@ def run_game(username, player_imgs):
             if player_rect.colliderect(r):
                 hit_type = "Overhead Obstacle"
         if hit_type:
+            # Stop background music
+            pygame.mixer.music.stop()
+            # Play lose sound effect
+            sound_effects["lose"].play()
+            # Wait until the sound finishes
+            while pygame.mixer.get_busy():
+                pygame.time.wait(100)
             save_score(username, score)
-            return score, hit_type
+            display_game_over(score, hit_type)
+            return
 
-        # Draw
+        # Draw everything
         for r in obstacles:
             screen.blit(obstacle_img_scaled, r)
         for r in overheads:
@@ -276,6 +373,31 @@ def run_game(username, player_imgs):
 
         pygame.display.update()
         clock.tick(60)
+
+# ------------------- Game Over Screen ------------------- #
+def display_game_over(score, hit_type):
+    # Play the lose sound effect again in game over screen
+    sound_effects["lose"].play()
+    # Wait until the sound finishes before displaying the screen
+    #while pygame.mixer.get_busy():
+        #pygame.time.wait(15)
+    play_menu_music()
+    font = pygame.font.Font(None, 80)
+    while True:
+        screen.fill((0, 0, 0))
+        screen.blit(font.render("Game Over", True, (255, 0, 0)), (WIDTH//3, HEIGHT//4))
+        screen.blit(font.render(f"Score: {score}", True, (255,255,255)), (WIDTH//3, HEIGHT//2))
+        screen.blit(font.render(f"You lost by {hit_type}!", True, (255,255,255)), (WIDTH//3, HEIGHT//2 + 80))
+        screen.blit(font.render("Press Enter to Restart", True, (0,255,0)), (WIDTH//3, HEIGHT//1.2))
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    return
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
 # ---------------- Menus ---------------- #
 def main_menu():
@@ -292,10 +414,13 @@ def main_menu():
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
+                    play_menu_click()
                     return "play"
                 if event.key == pygame.K_2:
+                    play_menu_click()
                     return "leaderboard"
                 if event.key == pygame.K_3:
+                    play_menu_click()
                     pygame.quit()
                     sys.exit()
 
@@ -320,6 +445,7 @@ def character_selection_menu():
                 elif event.key == pygame.K_DOWN:
                     selected = (selected + 1) % len(options)
                 elif event.key == pygame.K_RETURN:
+                    play_menu_click()
                     return "female" if selected == 0 else "male"
 
 def name_input_menu():
@@ -355,6 +481,9 @@ def start_with_resolution():
 WIDTH, HEIGHT = 1280, 720
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
+# Start playing menu music
+play_menu_music()
+
 while True:
     choice = main_menu()
     if choice == "play":
@@ -364,9 +493,8 @@ while True:
         gender = character_selection_menu()
         username = name_input_menu()
         player_imgs = female_imgs_scaled if gender == "female" else male_imgs_scaled
-        while True:
-            score, hit_type = run_game(username, player_imgs)
-            break
+        play_game_music()
+        run_game(username, player_imgs)
     elif choice == "leaderboard":
         scores = get_leaderboard()
         font = pygame.font.Font(None, 50)
