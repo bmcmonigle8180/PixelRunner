@@ -13,9 +13,9 @@ pygame.init()
 # Placeholder paths for sound effects
 
 sound_effect_paths = {
-    "menu_click": asset("MenuClicks.mp3"),
-    "jump": asset("GameJump.mp3"),
-    "lose": asset("GameLoss.mp3"),
+    "menu_click": asset("MenuClicks.ogg"),
+    "jump": asset("GameJump.ogg"),
+    "lose": asset("GameLoss.ogg"),
 
 }
 
@@ -28,7 +28,7 @@ for key, path in sound_effect_paths.items():
 sound_volumes = {
     
     "menu_click": 1.0,
-    "jump": 0.04,
+    "jump": 0.02,
     "lose": 0.2
 
 }
@@ -37,13 +37,13 @@ for key, sound in sound_effects.items():
 
 # ------------------- Music Management ------------------- #
 menu_music_paths = [
-    asset("MenuMusic.mp3"),
-    asset("MenuMusic.mp3")
+    asset("MenuMusic.ogg"),
+    asset("MenuMusic.ogg")
 ]
 game_music_paths = [
-    asset("GameMusic-1.mp3"),
-    asset("GameMusic-2.mp3"),
-    asset("GameMusic-3.mp3")
+    asset("GameMusic-1.ogg"),
+    asset("GameMusic-2.ogg"),
+    asset("GameMusic-3.ogg")
 ]
 
 menu_music_playlist = []
@@ -66,7 +66,7 @@ def play_game_music():
         random.shuffle(game_music_playlist)
     track = game_music_playlist.pop()
     pygame.mixer.music.load(track)
-    pygame.mixer.music.set_volume(0.08)
+    pygame.mixer.music.set_volume(0.12)
     pygame.mixer.music.play()
 
 def check_music():
