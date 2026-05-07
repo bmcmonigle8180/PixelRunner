@@ -27,8 +27,8 @@ for key, path in sound_effect_paths.items():
 # Set initial volumes
 sound_volumes = {
     
-    "menu_click": 1.0,
-    "jump": 0.02,
+    "menu_click": 0.7,
+    "jump": 0.0087,
     "lose": 0.2
 
 }
@@ -66,7 +66,7 @@ def play_game_music():
         random.shuffle(game_music_playlist)
     track = game_music_playlist.pop()
     pygame.mixer.music.load(track)
-    pygame.mixer.music.set_volume(0.12)
+    pygame.mixer.music.set_volume(0.18)
     pygame.mixer.music.play()
 
 def check_music():
@@ -107,11 +107,11 @@ ground_level_ratio = 0.82
 LEADERBOARD_FILE = "leaderboard.txt"
 
 BASE_SPEED = 6
-MAX_SPEED = 200
+MAX_SPEED = 20
 BASE_ACCEL = 0.0025
 
 MAX_SPACING = 1000
-MIN_SPACING = 150
+MIN_SPACING = 200
 OVERHEAD_HEIGHT_OFFSET = 105
 
 # ---------------- Resolution Menu ---------------- #
@@ -119,7 +119,6 @@ def resolution_menu():
     info = pygame.display.Info()
     max_width = info.current_w
     max_height = info.current_h
-
     options = ["720p", "Fullscreen"]
     selected = 0
     font = pygame.font.Font(None, 60)
@@ -151,6 +150,7 @@ def resolution_menu():
                 elif event.key == pygame.K_RETURN:
                     play_menu_click()
                     chosen = options[selected]
+
                     if chosen == "Fullscreen":
                         return (max_width, max_height), pygame.FULLSCREEN
                     else:
@@ -388,7 +388,7 @@ def display_game_over(score, hit_type):
         screen.blit(font.render("Game Over", True, (255, 0, 0)), (WIDTH//3, HEIGHT//4))
         screen.blit(font.render(f"Score: {score}", True, (255,255,255)), (WIDTH//3, HEIGHT//2))
         screen.blit(font.render(f"You lost by {hit_type}!", True, (255,255,255)), (WIDTH//3, HEIGHT//2 + 80))
-        screen.blit(font.render("Press Enter to Restart", True, (0,255,0)), (WIDTH//3, HEIGHT//1.2))
+        screen.blit(font.render("Press Enter to Return to menu", True, (0,255,0)), (WIDTH//3, HEIGHT//1.2))
         pygame.display.flip()
 
         for event in pygame.event.get():
@@ -402,11 +402,12 @@ def display_game_over(score, hit_type):
 # ---------------- Menus ---------------- #
 def main_menu():
     font = pygame.font.Font(None, 80)
+    titleFont = pygame.font.Font(None,110)
     while True:
         screen.fill((0,0,0))
         global WIDTH, HEIGHT
         WIDTH, HEIGHT = screen.get_size()
-        screen.blit(font.render("Pixel Runner", True, (0,255,0)), (WIDTH//3, HEIGHT//5))
+        screen.blit(titleFont.render("Pixel Runner", True, (0,255,0)), (WIDTH//3, HEIGHT//5))
         screen.blit(font.render("1. Play", True, (255,255,255)), (WIDTH//3, HEIGHT//3))
         screen.blit(font.render("2. Leaderboard", True, (255,255,255)), (WIDTH//3, HEIGHT//2))
         screen.blit(font.render("3. Quit", True, (255,255,255)), (WIDTH//3, HEIGHT//2 + 80))
