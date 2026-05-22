@@ -9,4 +9,4 @@ make sure all advanced options are installed
 	pip install pygame 
 	pip install screeninfo 
 
-lastly to open game go into pygame models and run it with python IDLE :)
+lastly open pixelrunner.py, if you wish to customize your version there's comments for most of the functions that you can change
