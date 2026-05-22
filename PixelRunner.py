@@ -37,12 +37,12 @@ for key, sound in sound_effects.items():
 
 # ------------------- Music Management ------------------- #
 menu_music_paths = [
-    asset("MenuMusic.ogg"),
-    asset("MenuMusic.ogg")
+    asset("MenuMusic2.mp3"),        #you can change the musics here and add as many as you want, just make sure they are set upcorrectly, it needs file name and type, should allow for any changes
+    asset("MenuMusic.mp3")
 ]
 game_music_paths = [
     asset("GameMusic-1.ogg"),
-    asset("GameMusic-2.ogg"),
+    asset("GameMusic-2.ogg"),  #same thing here
     asset("GameMusic-3.ogg")
 ]
 
@@ -56,7 +56,7 @@ def play_menu_music():
         random.shuffle(menu_music_playlist)
     track = menu_music_playlist.pop()
     pygame.mixer.music.load(track)
-    pygame.mixer.music.set_volume(0.03)
+    pygame.mixer.music.set_volume(0.35)
     pygame.mixer.music.play(-1)
 
 def play_game_music():
